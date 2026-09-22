@@ -72,7 +72,9 @@ Bottom nav: Home, Breathe, Plans, History.
 ## Progress log
 Update this section at the end of each session with what was finished and what is next.
 - 2026-09-22, Milestone 1 done: Expo SDK 57 app with Expo Router, TypeScript, Rubik (Regular/Medium/Bold bundled in `assets/fonts`), `theme/tokens.ts` built from the Figma variables, text styles and card shadow, and a test screen at `app/index.tsx` showing every text style and colour. Note: `size.chip` (29) is from this spec, not a Figma variable yet.
-- Next: Milestone 2, the component library on one test screen.
+- 2026-09-22, Milestone 2 done: `components/` has Button, Input, Chip, Card, Avatar, Rating, NavItem, BottomNav and the nav icons (react-native-svg, paths copied from the Figma export). Test screen at `app/index.tsx`; the tokens screen moved to `app/tokens.tsx`. `react-dom` pinned to 19.2.3 to fix an npm peer clash from expo-router. Tokens added that are not Figma styles/variables yet: chip height 30 (Figma component, replaces 29), avatarSm 32, text buttonLabel/cardTitle/cardBody/fabLabel.
+- Open question: Plans and History tab icons do not exist in Figma yet (V1 nav is Home, Breathe, Plans, History).
+- Next: Milestone 3, navigation, onboarding, Get help screen.
 
 ## Expo notes
 See `AGENTS.md` for Expo commands and rules (use `npx expo install`, never trust old Expo APIs from memory).

@@ -90,7 +90,10 @@ export const size = {
   nav: 68, // bottom nav height
   icon: 22,
   avatar: 44,
-  chip: 29, // from the spec; not a Figma variable yet
+  avatarSm: 32, // Avatar Size=Small; not a Figma variable yet
+  chip: 30, // Chip height in the Figma component; not a Figma variable yet
+  navItemWidth: 72,
+  navItemHeight: 56,
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -122,6 +125,12 @@ export const text = {
   labelDefault: { fontFamily: font.medium, fontSize: 13, lineHeight: 18 },
   caption: { fontFamily: font.regular, fontSize: 12, lineHeight: 16 },
   overline: { fontFamily: font.medium, fontSize: 11, lineHeight: 14 },
+
+  // Used inside Figma components but not saved as Figma text styles yet.
+  buttonLabel: { fontFamily: font.medium, fontSize: 15, lineHeight: 20 },
+  cardTitle: { fontFamily: font.bold, fontSize: 15, lineHeight: 20 },
+  cardBody: { fontFamily: font.regular, fontSize: 13, lineHeight: 18 },
+  fabLabel: { fontFamily: font.medium, fontSize: 10, lineHeight: 12 },
 } satisfies Record<string, TextStyle>;
 
 // ---------------------------------------------------------------------------

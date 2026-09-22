@@ -1,63 +1,122 @@
-// Milestone 1 test screen: shows every text style and colour token so you can
-// compare the phone with Figma. It will be replaced by the real Home screen later.
+// Milestone 2 test screen: every design system component in every state,
+// so you can compare the phone with the Figma Design System page.
+// It will be replaced by the real Home screen in Milestone 3.
+import { useState, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
-import { color, elevation, radius, space, text } from '../theme/tokens';
+import {
+  Avatar,
+  BottomNav,
+  BreatheIcon,
+  Button,
+  Card,
+  ChatBubbleIcon,
+  Chip,
+  HomeIcon,
+  Input,
+  Rating,
+  SpecialistsIcon,
+  type BottomNavTab,
+} from '../components';
+import { color, space, text } from '../theme/tokens';
 
-const textStyles = [
-  ['Display/H1', text.displayH1],
-  ['Heading/H2', text.headingH2],
-  ['Heading/Title', text.headingTitle],
-  ['Body/Large', text.bodyLarge],
-  ['Body/Default', text.bodyDefault],
-  ['Body/Emphasis', text.bodyEmphasis],
-  ['Label/Default', text.labelDefault],
-  ['Caption', text.caption],
-  ['Overline', text.overline],
-] as const;
+const feelings = ['Overwhelmed', 'Hurt', 'Ignored', 'Tired'];
 
-const swatches = [
-  ['brand/primary', color.brand.primary],
-  ['brand/active', color.brand.active],
-  ['brand/hover', color.brand.hover],
-  ['text/heading', color.text.heading],
-  ['text/body', color.text.body],
-  ['text/muted', color.text.muted],
-  ['surface/subtle', color.surface.subtle],
-  ['surface/muted', color.surface.muted],
-  ['feedback/danger', color.feedback.danger],
-  ['feedback/rating', color.feedback.rating],
-] as const;
+const figmaTabs: BottomNavTab[] = [
+  { key: 'home', label: 'Home', renderIcon: (c) => <HomeIcon color={c} filled /> },
+  { key: 'breathe', label: 'Breathe', renderIcon: (c) => <BreatheIcon color={c} /> },
+  { key: 'specialists', label: 'Specialists', renderIcon: (c) => <SpecialistsIcon color={c} filled /> },
+];
 
-export default function TokensTestScreen() {
+export default function ComponentsTestScreen() {
+  const [selectedFeelings, setSelectedFeelings] = useState<string[]>(['Overwhelmed']);
+  const [email, setEmail] = useState('you@email.com');
+  const [activeTab, setActiveTab] = useState('home');
+
+  const toggleFeeling = (feeling: string) => {
+    setSelectedFeelings((current) =>
+      current.includes(feeling) ? current.filter((f) => f !== feeling) : [...current, feeling],
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Chill Guy</Text>
-        <Text style={styles.subtitle}>Design tokens test screen</Text>
+        <Text style={styles.title}>Components</Text>
+        <Text style={styles.subtitle}>Hold a button to see its pressed state.</Text>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionLabel}>TEXT STYLES</Text>
-          {textStyles.map(([name, style]) => (
-            <Text key={name} style={[style, styles.sample]}>
-              {name}
-            </Text>
-          ))}
-        </View>
+        <Section label="BUTTON">
+          <Button label="Primary" onPress={() => {}} />
+          <Button label="Primary disabled" disabled />
+          <Button label="Secondary" type="secondary" onPress={() => {}} />
+          <Button label="Secondary disabled" type="secondary" disabled />
+          <Button label="Ghost" type="ghost" onPress={() => {}} />
+          <Button label="Ghost disabled" type="ghost" disabled />
+        </Section>
 
-        <View style={styles.card}>
-          <Text style={styles.sectionLabel}>COLOURS</Text>
-          {swatches.map(([name, value]) => (
-            <View key={name} style={styles.swatchRow}>
-              <View style={[styles.swatch, { backgroundColor: value }]} />
-              <Text style={styles.swatchName}>{name}</Text>
-              <Text style={styles.swatchValue}>{value}</Text>
+        <Section label="INPUT">
+          <Input placeholder="you@email.com" />
+          <Input value={email} onChangeText={setEmail} />
+          <Input value="Something went wrong" error editable={false} />
+          <Text style={styles.hint}>Tap a field to see the focus state.</Text>
+        </Section>
+
+        <Section label="CHIP">
+          <View style={styles.wrapRow}>
+            {feelings.map((feeling) => (
+              <Chip
+                key={feeling}
+                label={feeling}
+                selected={selectedFeelings.includes(feeling)}
+                onPress={() => toggleFeeling(feeling)}
+              />
+            ))}
+          </View>
+        </Section>
+
+        <Section label="CARD">
+          <Card title="Card title" body="Supporting line of text inside the card." />
+          <Card type="elevated" title="Card title" body="Supporting line of text inside the card." />
+        </Section>
+
+        <Section label="AVATAR AND RATING">
+          <View style={styles.row}>
+            <Avatar initial="A" size="small" />
+            <Avatar initial="A" />
+            <Rating score="4.9" count="· 128 ratings" />
+          </View>
+        </Section>
+
+        <Section label="ICONS">
+          <View style={styles.row}>
+            <HomeIcon />
+            <BreatheIcon />
+            <SpecialistsIcon />
+            <View style={styles.chatIconBackground}>
+              <ChatBubbleIcon />
             </View>
-          ))}
-        </View>
+          </View>
+        </Section>
+
+        <Section label="BOTTOM NAV (FIGMA VERSION)">
+          <BottomNav tabs={figmaTabs} activeKey={activeTab} onSelect={setActiveTab} showChat />
+          <Text style={styles.hint}>Tap the tabs to switch. V1 will use Home, Breathe, Plans and History, without Chat.</Text>
+        </Section>
+
+        <Button label="View design tokens" type="secondary" onPress={() => router.push('/tokens')} />
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function Section({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionLabel}>{label}</Text>
+      {children}
+    </View>
   );
 }
 
@@ -68,7 +127,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: space[4],
-    gap: space[4],
+    gap: space[5],
   },
   title: {
     ...text.displayH1,
@@ -77,39 +136,31 @@ const styles = StyleSheet.create({
   subtitle: {
     ...text.bodyLarge,
     color: color.text.muted,
+    marginTop: -space[4],
   },
-  card: {
-    ...elevation.card,
-    backgroundColor: color.surface.default,
-    borderRadius: radius.md,
-    padding: space[4],
-    gap: space[2],
+  section: {
+    gap: space[3],
   },
   sectionLabel: {
     ...text.overline,
     color: color.brand.primary,
   },
-  sample: {
-    color: color.text.heading,
-  },
-  swatchRow: {
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space[3],
+    gap: space[5],
   },
-  swatch: {
-    width: space[6],
-    height: space[6],
-    borderRadius: radius.sm,
-    borderWidth: 1,
-    borderColor: color.border.default,
+  wrapRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space[2],
   },
-  swatchName: {
-    ...text.bodyEmphasis,
-    color: color.text.body,
-    flex: 1,
+  chatIconBackground: {
+    padding: space[1],
+    borderRadius: space[2],
+    backgroundColor: color.brand.primary,
   },
-  swatchValue: {
+  hint: {
     ...text.caption,
     color: color.text.muted,
   },
