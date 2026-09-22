@@ -59,6 +59,54 @@ export function SpecialistsIcon({ color = tokens.text.disabled, filled = false }
   );
 }
 
+// Plans and History are not in Figma yet. Drawn in the same style (22x22, same stroke)
+// so the V1 tab bar is complete; replace them if Figma icons are made later.
+export function PlansIcon({ color = tokens.text.disabled, filled = false }: IconProps) {
+  return (
+    <Svg width={22} height={22} viewBox="0 0 22 22" fill="none">
+      <Path
+        d="M6.41667 3.66667H15.5833C16.5958 3.66667 17.4167 4.48748 17.4167 5.5V17.4167C17.4167 18.4292 16.5958 19.25 15.5833 19.25H6.41667C5.40414 19.25 4.58333 18.4292 4.58333 17.4167V5.5C4.58333 4.48748 5.40414 3.66667 6.41667 3.66667Z"
+        fill={color}
+        fillOpacity={filled ? 1 : 0}
+        stroke={color}
+        strokeWidth={STROKE}
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M8.25 2.29167H13.75V5.04167H8.25V2.29167Z"
+        fill={filled ? color : tokens.surface.default}
+        stroke={color}
+        strokeWidth={STROKE}
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M8.25 11.9167L10.0833 13.75L13.75 10.0833"
+        stroke={filled ? tokens.surface.default : color}
+        strokeWidth={STROKE}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+export function HistoryIcon({ color = tokens.text.disabled, filled = false }: IconProps) {
+  return (
+    <Svg width={22} height={22} viewBox="0 0 22 22" fill="none">
+      {filled ? <Path d="M11 3.20833A7.79167 7.79167 0 1 1 11 18.7917A7.79167 7.79167 0 0 1 11 3.20833Z" fill={color} /> : null}
+      <Path d="M5.49051 5.49051A7.79167 7.79167 0 1 1 3.20833 11" stroke={color} strokeWidth={STROKE} strokeLinecap="round" />
+      <Path d="M5.49051 2.74051V5.49051H8.24051" stroke={color} strokeWidth={STROKE} strokeLinecap="round" strokeLinejoin="round" />
+      <Path
+        d="M11 7.33333V11L13.75 12.8333"
+        stroke={filled ? tokens.surface.default : color}
+        strokeWidth={STROKE}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 type ChatBubbleIconProps = {
   color?: string;
   dotColor?: string;

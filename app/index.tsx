@@ -14,8 +14,10 @@ import {
   Card,
   ChatBubbleIcon,
   Chip,
+  HistoryIcon,
   HomeIcon,
   Input,
+  PlansIcon,
   Rating,
   SpecialistsIcon,
   type BottomNavTab,
@@ -30,10 +32,19 @@ const figmaTabs: BottomNavTab[] = [
   { key: 'specialists', label: 'Specialists', renderIcon: (c) => <SpecialistsIcon color={c} filled /> },
 ];
 
+// The V1 tab bar: Home, Breathe, Plans, History, no Chat button.
+const v1Tabs: BottomNavTab[] = [
+  { key: 'home', label: 'Home', renderIcon: (c) => <HomeIcon color={c} filled /> },
+  { key: 'breathe', label: 'Breathe', renderIcon: (c) => <BreatheIcon color={c} /> },
+  { key: 'plans', label: 'Plans', renderIcon: (c) => <PlansIcon color={c} filled /> },
+  { key: 'history', label: 'History', renderIcon: (c) => <HistoryIcon color={c} filled /> },
+];
+
 export default function ComponentsTestScreen() {
   const [selectedFeelings, setSelectedFeelings] = useState<string[]>(['Overwhelmed']);
   const [email, setEmail] = useState('you@email.com');
   const [activeTab, setActiveTab] = useState('home');
+  const [activeV1Tab, setActiveV1Tab] = useState('plans');
 
   const toggleFeeling = (feeling: string) => {
     setSelectedFeelings((current) =>
@@ -94,6 +105,8 @@ export default function ComponentsTestScreen() {
             <HomeIcon />
             <BreatheIcon />
             <SpecialistsIcon />
+            <PlansIcon />
+            <HistoryIcon />
             <View style={styles.chatIconBackground}>
               <ChatBubbleIcon />
             </View>
@@ -102,7 +115,12 @@ export default function ComponentsTestScreen() {
 
         <Section label="BOTTOM NAV (FIGMA VERSION)">
           <BottomNav tabs={figmaTabs} activeKey={activeTab} onSelect={setActiveTab} showChat />
-          <Text style={styles.hint}>Tap the tabs to switch. V1 will use Home, Breathe, Plans and History, without Chat.</Text>
+          <Text style={styles.hint}>Tap the tabs to switch.</Text>
+        </Section>
+
+        <Section label="BOTTOM NAV (V1)">
+          <BottomNav tabs={v1Tabs} activeKey={activeV1Tab} onSelect={setActiveV1Tab} />
+          <Text style={styles.hint}>Plans and History icons are new, drawn to match the Figma icons.</Text>
         </Section>
 
         <Button label="View design tokens" type="secondary" onPress={() => router.push('/tokens')} />

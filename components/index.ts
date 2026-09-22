@@ -8,4 +8,4 @@ export { Chip } from './Chip';
 export { Input } from './Input';
 export { NavItem } from './NavItem';
 export { Rating } from './Rating';
-export { BreatheIcon, ChatBubbleIcon, HomeIcon, SpecialistsIcon, StarIcon } from './icons/NavIcons';
+export { BreatheIcon, ChatBubbleIcon, HistoryIcon, HomeIcon, PlansIcon, SpecialistsIcon, StarIcon } from './icons/NavIcons';
