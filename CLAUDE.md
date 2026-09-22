@@ -71,4 +71,8 @@ Bottom nav: Home, Breathe, Plans, History.
 
 ## Progress log
 Update this section at the end of each session with what was finished and what is next.
-- (nothing yet)
+- 2026-09-22, Milestone 1 done: Expo SDK 57 app with Expo Router, TypeScript, Rubik (Regular/Medium/Bold bundled in `assets/fonts`), `theme/tokens.ts` built from the Figma variables, text styles and card shadow, and a test screen at `app/index.tsx` showing every text style and colour. Note: `size.chip` (29) is from this spec, not a Figma variable yet.
+- Next: Milestone 2, the component library on one test screen.
+
+## Expo notes
+See `AGENTS.md` for Expo commands and rules (use `npx expo install`, never trust old Expo APIs from memory).

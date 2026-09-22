@@ -8,3 +8,15 @@ V1 helps people calm down in the moment and understand why their anger comes bac
 - In crisis? Call **112**, or TelefonSeelsorge **0800 111 0 111** / **0800 111 0 222**.
 
 See [`CLAUDE.md`](CLAUDE.md) for the stack, scope and roadmap.
+
+## Run it on your phone
+
+1. Install [Node.js](https://nodejs.org) (LTS) on your computer, and **Expo Go** on your phone.
+2. In a terminal:
+   ```bash
+   git clone https://github.com/laminema0/chill-guy.git
+   cd chill-guy
+   npm install
+   npx expo start
+   ```
+3. Scan the QR code: with the Camera app on iPhone, or from inside Expo Go on Android. Phone and computer must be on the same Wi-Fi (if that doesn't work, try `npx expo start --tunnel`).
