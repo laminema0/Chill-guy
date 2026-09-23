@@ -42,6 +42,9 @@ features/    checkin, breathe, plans, revisit
 lib/         notifications, export, safety content
 ```
 
+## Goal (updated 2026-09-23)
+This app is for Amin's portfolio. The goal is the **whole Final Journey from Figma as a real app**, as close to the design as possible, so every screen in Figma gets built and linked. Features that need servers (AI chat, booking, accounts, wearable) are built as realistic front-end screens with example content and stay on the device. The V1 scope below is the order in which features become *working* for real.
+
 ## V1 scope
 In: Granular Check-in, Breathe, My If-Then Plan, Cool-Down Revisit, onboarding, Get help screen, settings (export and delete data, optional app lock).
 Out for now: My Anger Story, Journey Chapters, Repair and Express, AI chat (hide the Chat FAB), therapist booking, wearable, accounts, cloud, analytics.
@@ -75,8 +78,9 @@ Update this section at the end of each session with what was finished and what i
 - 2026-09-22, Milestone 2 done: `components/` has Button, Input, Chip, Card, Avatar, Rating, NavItem, BottomNav and the nav icons (react-native-svg, paths copied from the Figma export). Test screen at `app/index.tsx`; the tokens screen moved to `app/tokens.tsx`. `react-dom` pinned to 19.2.3 to fix an npm peer clash from expo-router. Tokens added that are not Figma styles/variables yet: chip height 30 (Figma component, replaces 29), avatarSm 32, text buttonLabel/cardTitle/cardBody/fabLabel.
 - Plans (clipboard + check) and History (clock + back arrow) icons were drawn in code to match the Figma icon style, since Figma has none yet. V1 tab bar shown on the test screen.
 - 2026-09-23, Clickable prototype of the V1 Figma screens (Amin asked to see the real app, exactly like Figma, before features work). Decisions by Amin: V1 screens only; use the Figma bottom nav (Home, Breathe, Specialists + Chat button) instead of Home/Breathe/Plans/History. Specialists and Chat open a "Coming later" screen, as does anything else outside V1 (Journey chapters, Talk it out, Heart rate, Notifications, full story). Built: Home, Breathe (still), Check-in, My Story (Pattern + Logs), My Plan, Settings (from the avatar on Home), all with example content from Figma. The design system test screens moved to `app/dev/` (reached from Settings, "Design system (dev)"). New tokens under `color.extra`, `radius.card/quickLink/navBar/navItem`, `layout`, and screen text styles are values from the screens that are not Figma variables or text styles yet.
-- Known gaps: "Get help now" is not in Figma and is not on the screens yet (hard rule, do it in Milestone 3). Home uses an initial instead of the stock profile photo. Intro/onboarding screens not built yet. Plans/History icons exist but are not used by the current nav.
-- Next: intro screens (V1 subset: Intro 01, 02, 03, 06, 07, 08, 10), then Milestone 3 (Get help screen, onboarding flow, navigation polish).
+- 2026-09-23, Whole Final Journey built as a clickable app (portfolio goal). New screens: Intro (10 pages), Sign up, Sign in, Setup (identity, verify code, context vault), Chat with Chill Guy (+ "Save this as a log?" dialog), Journey chapters, Specialists list, Specialist profile & booking, My sessions, Notifications (bell on Home), Profile (avatar on Home, has the Settings link), Your heart (Heart rate card on Home; a hidden tab so the nav shows Home). Chat button opens the chat. Example data lives in `lib/session.ts` and `lib/specialists.ts`; nothing is saved yet.
+- Known gaps: "Get help now" is not in Figma and is not on the screens yet (hard rule). Home uses an initial instead of the stock profile photo. Chat replies, booking, file upload and the heart chart are example content only. The Chat button gradient shows on phones only (web shows flat teal).
+- Next: Milestone 3 polish (Get help screen), then make V1 features really work in order: Breathe animation, Check-in saving, Plans, Cool-Down Revisit.
 
 ## Expo notes
 See `AGENTS.md` for Expo commands and rules (use `npx expo install`, never trust old Expo APIs from memory).

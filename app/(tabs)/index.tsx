@@ -2,30 +2,38 @@
 // Prototype: it looks like Figma; parts that are not in V1 open "Coming later".
 import { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { router, type Href } from 'expo-router';
+import { Redirect, router, useLocalSearchParams } from 'expo-router';
 
 import { BellIcon, Chip, CompassBadge, HeartIcon, LinkCard, Screen } from '../../components';
+import { session } from '../../lib/session';
 import { color, radius, size, space, text } from '../../theme/tokens';
 
 const feelings = ['Calm', 'Dismissed', 'Overwhelmed', 'Treated unfairly'];
 
-const comingLater = (feature: string): Href => ({ pathname: '/coming-later', params: { feature } });
 
 export default function HomeScreen() {
   const [selected, setSelected] = useState<string[]>(['Calm']);
+  // "?skipIntro=1" opens Home directly (used for previews).
+  const { skipIntro } = useLocalSearchParams<{ skipIntro?: string }>();
+  if (skipIntro) session.onboarded = true;
 
   const toggle = (feeling: string) =>
     setSelected((current) => (current.includes(feeling) ? current.filter((f) => f !== feeling) : [...current, feeling]));
+
+  // First time the app opens: start with the intro and sign-up.
+  if (!session.onboarded) {
+    return <Redirect href="/intro" />;
+  }
 
   return (
     <Screen gap={space[4]}>
       {/* Greeting, notifications bell, profile picture */}
       <View style={styles.header}>
-        <Text style={styles.greeting}>Hi, Amin</Text>
-        <Pressable onPress={() => router.push(comingLater('Notifications'))} accessibilityLabel="Notifications" hitSlop={8}>
+        <Text style={styles.greeting}>Hi, {session.name}</Text>
+        <Pressable onPress={() => router.push('/notifications')} accessibilityLabel="Notifications" hitSlop={8}>
           <BellIcon />
         </Pressable>
-        <Pressable onPress={() => router.push('/settings')} accessibilityLabel="Settings" style={styles.avatar}>
+        <Pressable onPress={() => router.push('/profile')} accessibilityLabel="Profile" style={styles.avatar}>
           <Text style={styles.avatarInitial}>A</Text>
         </Pressable>
       </View>
@@ -34,7 +42,7 @@ export default function HomeScreen() {
         leading={<CompassBadge />}
         title="Chapter 3 · Preparing"
         subtitle="2 of 4 plan cards built — keep going"
-        onPress={() => router.push(comingLater('Journey chapters'))}
+        onPress={() => router.push('/journey')}
       />
 
       {/* My Story / My Plan */}
@@ -62,7 +70,7 @@ export default function HomeScreen() {
       <View style={styles.heatCard}>
         <View style={styles.heatText}>
           <Text style={styles.heatTitle}>Feeling the heat?{'\n'}Enter the Chill Guy Zone</Text>
-          <Pressable style={styles.talkButton} onPress={() => router.push(comingLater('Chill Guy chat'))}>
+          <Pressable style={styles.talkButton} onPress={() => router.push('/chat')}>
             <Text style={styles.talkLabel}>Talk it out</Text>
           </Pressable>
         </View>
@@ -73,11 +81,11 @@ export default function HomeScreen() {
         tone="danger"
         title="Cool-Down Revisit ready"
         subtitle="Tuesday’s episode, seen with calmer eyes"
-        onPress={() => router.push(comingLater('Cool-Down Revisit'))}
+        onPress={() => router.push('/story')}
       />
 
       {/* Heart rate */}
-      <Pressable style={[styles.whiteCard, styles.heartCard]} onPress={() => router.push(comingLater('Heart rate'))}>
+      <Pressable style={[styles.whiteCard, styles.heartCard]} onPress={() => router.push('/heart')}>
         <View style={styles.heartRow}>
           <HeartIcon />
           <Text style={styles.heartLabel}>Heart rate</Text>

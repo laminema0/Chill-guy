@@ -16,7 +16,9 @@ const tabs: BottomNavTab[] = [
 
 function FloatingNav({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const activeKey = state.routes[state.index]?.name ?? 'index';
+  const current = state.routes[state.index]?.name ?? 'index';
+  // Heart rate is opened from Home, so Home stays highlighted there.
+  const activeKey = current === 'heart' ? 'index' : current;
 
   return (
     <View style={[styles.navHolder, { bottom: insets.bottom + layout.navBottomGap }]} pointerEvents="box-none">
@@ -25,7 +27,7 @@ function FloatingNav({ state, navigation }: BottomTabBarProps) {
         activeKey={activeKey}
         onSelect={(key) => navigation.navigate(key)}
         showChat
-        onChatPress={() => router.push({ pathname: '/coming-later', params: { feature: 'Chill Guy chat' } })}
+        onChatPress={() => router.push('/chat')}
       />
     </View>
   );
@@ -37,6 +39,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" />
       <Tabs.Screen name="breathe" />
       <Tabs.Screen name="specialists" />
+      <Tabs.Screen name="heart" />
     </Tabs>
   );
 }

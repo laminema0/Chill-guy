@@ -5,6 +5,7 @@ export { BackButton } from './BackButton';
 export { BottomNav, type BottomNavTab } from './BottomNav';
 export { Button } from './Button';
 export { Card } from './Card';
+export { ChatBubble } from './ChatBubble';
 export { Chip } from './Chip';
 export { Input } from './Input';
 export { IntensitySlider } from './IntensitySlider';

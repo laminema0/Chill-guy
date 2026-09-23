@@ -71,6 +71,10 @@ export const color = {
     fabGradientEnd: '#3AABBC', // Chat button gradient end colour
     breatheRingOuter: 'rgba(255, 255, 255, 0.12)',
     breatheRingMiddle: 'rgba(255, 255, 255, 0.18)',
+    slate: '#4A6572', // soft body text on light teal (Intro 07, Intro 10)
+    bubbleOnBrand: 'rgba(255, 255, 255, 0.16)', // speech bubble on the teal Breathing intro
+    scrim: 'rgba(31, 65, 82, 0.35)', // dark layer behind the "Save this as a log?" dialog
+    chartDotLight: '#76B7D1', // lighter dots in the heart-rate chart
   },
 } as const;
 
@@ -170,6 +174,30 @@ export const text = {
   dateLabel: { fontFamily: font.medium, fontSize: 12, lineHeight: 15 },
   lead: { fontFamily: font.regular, fontSize: 15, lineHeight: 19 },
   counter: { fontFamily: font.regular, fontSize: 18, lineHeight: 22 },
+
+  // Intro carousel
+  introHero: { fontFamily: font.bold, fontSize: 36, lineHeight: 43 },
+  introHeroSmall: { fontFamily: font.bold, fontSize: 32, lineHeight: 38 },
+  introTitle: { fontFamily: font.bold, fontSize: 26, lineHeight: 31 },
+  introMeet: { fontFamily: font.bold, fontSize: 30, lineHeight: 36 },
+  introGiant: { fontFamily: font.bold, fontSize: 128, lineHeight: 104 },
+  introSub: { fontFamily: font.regular, fontSize: 18, lineHeight: 22 },
+  introBody: { fontFamily: font.regular, fontSize: 16, lineHeight: 20 },
+  bubble: { fontFamily: font.medium, fontSize: 16, lineHeight: 20 },
+  introPhase: { fontFamily: font.bold, fontSize: 20, lineHeight: 24 },
+  cardName: { fontFamily: font.bold, fontSize: 15, lineHeight: 19 },
+
+  // Sign up, chat, specialists, profile
+  authTitle: { fontFamily: font.bold, fontSize: 28, lineHeight: 34 },
+  plus: { fontFamily: font.medium, fontSize: 22, lineHeight: 26 },
+  personName: { fontFamily: font.bold, fontSize: 16, lineHeight: 20 },
+  profileName: { fontFamily: font.bold, fontSize: 20, lineHeight: 24 },
+  headerTitle: { fontFamily: font.bold, fontSize: 22, lineHeight: 27 },
+  chatText: { fontFamily: font.regular, fontSize: 14, lineHeight: 17 },
+  tiny: { fontFamily: font.regular, fontSize: 11, lineHeight: 13 },
+  tinyBold: { fontFamily: font.bold, fontSize: 9, lineHeight: 11 },
+  statValue: { fontFamily: font.bold, fontSize: 20, lineHeight: 24 },
+  bpm: { fontFamily: font.bold, fontSize: 18, lineHeight: 22 },
 } satisfies Record<string, TextStyle>;
 
 // ---------------------------------------------------------------------------
