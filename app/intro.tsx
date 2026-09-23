@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Platform,
   useWindowDimensions,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
@@ -233,7 +234,9 @@ function buildPages(): Page[] {
 }
 
 export default function IntroScreen() {
-  const { width } = useWindowDimensions();
+  const window = useWindowDimensions();
+  // In a desktop browser the app sits in a phone-width column (see app/_layout.tsx).
+  const width = Platform.OS === 'web' ? Math.min(window.width, layout.webMaxWidth) : window.width;
   const insets = useSafeAreaInsets();
   const pager = useRef<ScrollView>(null);
   const pages = buildPages();

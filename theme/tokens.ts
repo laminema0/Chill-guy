@@ -217,4 +217,5 @@ export const layout = {
   navBottomGap: 14, // space under the floating bottom nav
   navSide: 22, // space left and right of the floating bottom nav
   navClearance: 110, // bottom padding so content can scroll above the nav
+  webMaxWidth: 430, // phone-width column when the app runs in a desktop browser
 } as const;
