@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { color, fontFiles, layout } from '../theme/tokens';
+import { DeviceFrame } from '../components/DeviceFrame';
+import { color, fontFiles } from '../theme/tokens';
 
 // Keep the splash screen up until Rubik has loaded, so text never flashes in the wrong font.
 SplashScreen.preventAutoHideAsync();
@@ -37,26 +37,7 @@ export default function RootLayout() {
     </>
   );
 
-  // In a desktop browser (the live portfolio version), show the app as a phone-width column.
-  if (Platform.OS !== 'web') return app;
-  return (
-    <View style={styles.webBackdrop}>
-      <View style={styles.webPhone}>{app}</View>
-    </View>
-  );
+  // On a laptop browser the app sits in an iPhone frame (components/DeviceFrame.tsx).
+  return <DeviceFrame>{app}</DeviceFrame>;
 }
 
-const styles = StyleSheet.create({
-  webBackdrop: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: color.surface.subtle,
-  },
-  webPhone: {
-    flex: 1,
-    width: '100%',
-    maxWidth: layout.webMaxWidth,
-    overflow: 'hidden',
-    backgroundColor: color.surface.page,
-  },
-});

@@ -75,6 +75,7 @@ export const color = {
     bubbleOnBrand: 'rgba(255, 255, 255, 0.16)', // speech bubble on the teal Breathing intro
     scrim: 'rgba(31, 65, 82, 0.35)', // dark layer behind the "Save this as a log?" dialog
     chartDotLight: '#76B7D1', // lighter dots in the heart-rate chart
+    deviceBezel: '#0B1219', // iPhone frame around the web version
   },
 } as const;
 
@@ -199,6 +200,7 @@ export const text = {
   statValue: { fontFamily: font.bold, fontSize: 20, lineHeight: 24 },
   bpm: { fontFamily: font.bold, fontSize: 18, lineHeight: 22 },
   emergencyNumber: { fontFamily: font.bold, fontSize: 32, lineHeight: 38 },
+  deviceTime: { fontFamily: font.medium, fontSize: 16, lineHeight: 20 },
 } satisfies Record<string, TextStyle>;
 
 // ---------------------------------------------------------------------------
@@ -217,5 +219,22 @@ export const layout = {
   navBottomGap: 14, // space under the floating bottom nav
   navSide: 22, // space left and right of the floating bottom nav
   navClearance: 110, // bottom padding so content can scroll above the nav
-  webMaxWidth: 430, // phone-width column when the app runs in a desktop browser
 } as const;
+
+// iPhone frame for the web version on a laptop (components/DeviceFrame.tsx).
+// The screen is the Figma frame size; everything else follows the iPhone 16 Pro shape.
+export const device = {
+  screenWidth: 402,
+  screenHeight: 874,
+  bezel: 12,
+  screenRadius: 55,
+  windowMargin: 24, // space kept around the phone in the browser window
+  minWindowWidth: 600, // narrower windows (phones, the portfolio embed) get no frame
+  statusBarHeight: 54,
+  statusBarPadding: 32,
+  homeIndicatorHeight: 34,
+  homeIndicatorWidth: 134,
+  islandTop: 11,
+  islandWidth: 126,
+  islandHeight: 37,
+};
