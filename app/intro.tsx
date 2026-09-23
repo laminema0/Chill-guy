@@ -8,8 +8,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Platform,
-  useWindowDimensions,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
@@ -18,6 +16,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button, ChatBubble, HeartIcon, HelpPill, Tag } from '../components';
+import { useAppWidth } from '../components/DeviceFrame';
 import { color, layout, radius, space, text } from '../theme/tokens';
 
 const mascot = require('../assets/images/chill-guy-mascot.png');
@@ -234,9 +233,8 @@ function buildPages(): Page[] {
 }
 
 export default function IntroScreen() {
-  const window = useWindowDimensions();
-  // In a desktop browser the app sits in a phone-width column (see app/_layout.tsx).
-  const width = Platform.OS === 'web' ? Math.min(window.width, layout.webMaxWidth) : window.width;
+  // The phone frame's screen width on a laptop browser, otherwise the window width.
+  const width = useAppWidth();
   const insets = useSafeAreaInsets();
   const pager = useRef<ScrollView>(null);
   const pages = buildPages();
