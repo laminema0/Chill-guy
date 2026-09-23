@@ -29,3 +29,4 @@ export {
   SettingsBellIcon,
   TrashIcon,
 } from './icons/UiIcons';
+export { HelpPill } from './HelpPill';

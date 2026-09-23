@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, View, type StyleProp, type ViewStyle } from 're
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { color, layout, space } from '../theme/tokens';
+import { HelpPill } from './HelpPill';
 
 type ScreenProps = {
   children: ReactNode;
@@ -13,9 +14,11 @@ type ScreenProps = {
   background?: string;
   scroll?: boolean;
   contentStyle?: StyleProp<ViewStyle>;
+  /** Show the "Help" pill top-right. Turn off where the screen places it itself. */
+  help?: boolean;
 };
 
-export function Screen({ children, gap = space[4], background = color.surface.page, scroll = true, contentStyle }: ScreenProps) {
+export function Screen({ children, gap = space[4], background = color.surface.page, scroll = true, contentStyle, help = true }: ScreenProps) {
   const insets = useSafeAreaInsets();
   const padding = {
     paddingTop: insets.top + space[2],
@@ -24,13 +27,25 @@ export function Screen({ children, gap = space[4], background = color.surface.pa
     gap,
   };
 
+  const helpPill = help ? (
+    <View style={[styles.help, { top: insets.top + space[2] + 3 }]}>
+      <HelpPill />
+    </View>
+  ) : null;
+
   if (!scroll) {
-    return <View style={[styles.fill, { backgroundColor: background }, padding, contentStyle]}>{children}</View>;
+    return (
+      <View style={[styles.fill, { backgroundColor: background }, padding, contentStyle]}>
+        {children}
+        {helpPill}
+      </View>
+    );
   }
 
   return (
     <ScrollView style={[styles.fill, { backgroundColor: background }]} contentContainerStyle={[padding, contentStyle]}>
       {children}
+      {helpPill}
     </ScrollView>
   );
 }
@@ -38,5 +53,9 @@ export function Screen({ children, gap = space[4], background = color.surface.pa
 const styles = StyleSheet.create({
   fill: {
     flex: 1,
+  },
+  help: {
+    position: 'absolute',
+    right: layout.screenPadding,
   },
 });

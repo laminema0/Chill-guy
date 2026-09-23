@@ -6,7 +6,7 @@ import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, St
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BackButton } from '../components';
+import { BackButton, HelpPill } from '../components';
 import { MicIcon } from '../components/icons/MoreIcons';
 import { color, layout, radius, space, text } from '../theme/tokens';
 
@@ -48,6 +48,8 @@ export default function ChatScreen() {
           <Text style={styles.headerName}>Chill Guy</Text>
           <Text style={styles.headerStatus}>always here</Text>
         </View>
+        <View style={styles.headerSpacer} />
+        <HelpPill />
       </View>
 
       <ScrollView ref={scroll} contentContainerStyle={styles.messages}>
@@ -120,6 +122,9 @@ const styles = StyleSheet.create({
   fill: {
     flex: 1,
     backgroundColor: color.surface.page,
+  },
+  headerSpacer: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

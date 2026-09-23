@@ -16,7 +16,7 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, ChatBubble, HeartIcon, Tag } from '../components';
+import { Button, ChatBubble, HeartIcon, HelpPill, Tag } from '../components';
 import { color, layout, radius, space, text } from '../theme/tokens';
 
 const mascot = require('../assets/images/chill-guy-mascot.png');
@@ -265,6 +265,7 @@ export default function IntroScreen() {
             style={[styles.page, { width, backgroundColor: p.background, paddingTop: insets.top + space[2] }]}
           >
             <View style={styles.skipRow}>
+              <HelpPill />
               {p.showSkip !== false ? (
                 <Pressable onPress={finish} hitSlop={12}>
                   <Text style={[styles.skip, p.onBrand && { color: color.extra.tealSoft }]}>Skip</Text>
@@ -346,14 +347,16 @@ const styles = StyleSheet.create({
   },
   skipRow: {
     height: 32,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: space[4],
+    paddingRight: space[5],
     marginBottom: space[2],
   },
   skip: {
     ...text.bodyEmphasis,
     color: color.text.muted,
-    marginRight: space[5],
   },
   hero: {
     alignItems: 'stretch',

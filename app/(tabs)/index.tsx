@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 
-import { BellIcon, Chip, CompassBadge, HeartIcon, LinkCard, Screen } from '../../components';
+import { BellIcon, Chip, CompassBadge, HeartIcon, HelpPill, LinkCard, Screen } from '../../components';
 import { session } from '../../lib/session';
 import { color, radius, size, space, text } from '../../theme/tokens';
 
@@ -26,10 +26,11 @@ export default function HomeScreen() {
   }
 
   return (
-    <Screen gap={space[4]}>
-      {/* Greeting, notifications bell, profile picture */}
+    <Screen gap={space[4]} help={false}>
+      {/* Greeting, help, notifications bell, profile picture */}
       <View style={styles.header}>
         <Text style={styles.greeting}>Hi, {session.name}</Text>
+        <HelpPill />
         <Pressable onPress={() => router.push('/notifications')} accessibilityLabel="Notifications" hitSlop={8}>
           <BellIcon />
         </Pressable>

@@ -198,6 +198,7 @@ export const text = {
   tinyBold: { fontFamily: font.bold, fontSize: 9, lineHeight: 11 },
   statValue: { fontFamily: font.bold, fontSize: 20, lineHeight: 24 },
   bpm: { fontFamily: font.bold, fontSize: 18, lineHeight: 22 },
+  emergencyNumber: { fontFamily: font.bold, fontSize: 32, lineHeight: 38 },
 } satisfies Record<string, TextStyle>;
 
 // ---------------------------------------------------------------------------
