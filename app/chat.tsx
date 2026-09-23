@@ -1,41 +1,69 @@
 // Chill Guy chat, from Figma "7 · Chill Guy chat" and "8 · Chat — save as log".
-// Prototype: the conversation is the example from Figma. You can type and send; Chill Guy
-// answers with a gentle placeholder line (no AI and no internet in this version).
+// Chill Guy is not an AI: `lib/chat` reads each message (who, what happened, feelings, thinking traps)
+// and picks a written reply, so it stays on topic. Every message passes the safety check first.
 import { useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BackButton, HelpPill } from '../components';
-import { MicIcon } from '../components/icons/MoreIcons';
-import { color, layout, radius, space, text } from '../theme/tokens';
+import { BackButton, HelpPill, IntensitySlider } from '../components';
+import { MicIcon, PhoneIcon } from '../components/icons/MoreIcons';
+import { initialState, openingTurn, respond, type BotTurn, type ChatState, type Chip, type Input } from '../lib/chat/engine';
+import { color, layout, radius, size, space, text } from '../theme/tokens';
 
-type Message = { from: 'guy' | 'me'; text: string };
+type Item = { kind: 'guy' | 'me'; text: string } | { kind: 'help' };
 
-const firstMessages: Message[] = [
-  { from: 'guy', text: 'Hey — tell me what happened.' },
-  { from: 'me', text: 'I was working on a project. My colleague kept interrupting with useless comments.' },
-  { from: 'guy', text: 'That sounds frustrating — being interrupted when you’re focused.' },
-  { from: 'guy', text: 'It seems her comments felt like they dismissed your work. Does that fit?' },
+const REPLY_DELAY = 450; // a short pause so Chill Guy doesn't answer instantly
+
+const toItems = (turn: BotTurn): Item[] => [
+  ...turn.messages.map((t): Item => ({ kind: 'guy', text: t })),
+  ...(turn.helpCard ? [{ kind: 'help' } as Item] : []),
 ];
 
 export default function ChatScreen() {
   const insets = useSafeAreaInsets();
   const scroll = useRef<ScrollView>(null);
-  const [messages, setMessages] = useState<Message[]>(firstMessages);
+  const state = useRef<ChatState>(initialState);
+  const [items, setItems] = useState<Item[]>(toItems(openingTurn));
+  const [turn, setTurn] = useState<BotTurn>(openingTurn);
+  const [typing, setTyping] = useState(false);
+  const [rating, setRating] = useState(5);
   const [draft, setDraft] = useState('');
   const [saveOpen, setSaveOpen] = useState(false);
+
+  const scrollDown = () => setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 60);
+
+  const talk = (input: Input, shown: string) => {
+    setItems((list) => [...list, { kind: 'me', text: shown }]);
+    setTurn({ messages: [], chips: [] });
+    setTyping(true);
+    scrollDown();
+    const [next, reply] = respond(state.current, input);
+    state.current = next;
+    setTimeout(() => {
+      setTyping(false);
+      setItems((list) => [...list, ...toItems(reply)]);
+      // An empty reply (e.g. after opening another screen) keeps the current buttons.
+      setTurn((current) => (reply.messages.length > 0 || reply.chips.length > 0 ? reply : current));
+      if (reply.askRating) setRating(5);
+      scrollDown();
+    }, REPLY_DELAY);
+  };
 
   const send = (value: string) => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    setMessages((m) => [
-      ...m,
-      { from: 'me', text: trimmed },
-      { from: 'guy', text: 'Thanks for telling me. Take a slow breath — what do you notice in your body right now?' },
-    ]);
     setDraft('');
-    setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 50);
+    talk({ text: trimmed }, trimmed);
+  };
+
+  const pressChip = (chip: Chip) => {
+    if (chip.save) {
+      setSaveOpen(true);
+      return;
+    }
+    if (chip.href) router.push(chip.href);
+    talk({ chip: chip.id }, chip.label);
   };
 
   return (
@@ -52,17 +80,39 @@ export default function ChatScreen() {
         <HelpPill />
       </View>
 
-      <ScrollView ref={scroll} contentContainerStyle={styles.messages}>
-        {messages.map((m, i) => (
-          <View key={i} style={m.from === 'me' ? styles.me : styles.guy}>
-            <Text style={[styles.messageText, m.from === 'me' && { color: color.text.onBrand }]}>{m.text}</Text>
+      <ScrollView ref={scroll} contentContainerStyle={styles.messages} onContentSizeChange={scrollDown}>
+        <Text style={styles.disclaimer}>Chill Guy is a guide, not a therapist. In an emergency, tap Help.</Text>
+        {items.map((item, i) =>
+          item.kind === 'help' ? (
+            <HelpCard key={i} />
+          ) : (
+            <View key={i} style={item.kind === 'me' ? styles.me : styles.guy}>
+              <Text style={[styles.messageText, item.kind === 'me' && { color: color.text.onBrand }]}>{item.text}</Text>
+            </View>
+          ),
+        )}
+        {typing ? (
+          <View style={[styles.guy, styles.typing]}>
+            <Text style={styles.messageText}>…</Text>
           </View>
-        ))}
-        <View style={styles.quickReplies}>
-          <QuickReply label="Yes, exactly" onPress={() => send('Yes, exactly')} />
-          <QuickReply label="No" onPress={() => send('No')} />
-          <QuickReply label="Save this as a log" highlighted onPress={() => setSaveOpen(true)} />
-        </View>
+        ) : null}
+
+        {!typing && turn.askRating ? (
+          <View style={styles.ratingCard}>
+            <IntensitySlider value={rating} onChange={setRating} />
+            <Pressable style={styles.ratingButton} onPress={() => talk({ rating }, `${rating} / 10`)}>
+              <Text style={styles.ratingButtonLabel}>That’s it — {rating}</Text>
+            </Pressable>
+          </View>
+        ) : null}
+
+        {!typing && turn.chips.length > 0 ? (
+          <View style={styles.quickReplies}>
+            {turn.chips.map((chip) => (
+              <QuickReply key={chip.id} label={chip.label} highlighted={chip.highlighted} onPress={() => pressChip(chip)} />
+            ))}
+          </View>
+        ) : null}
       </ScrollView>
 
       {/* Message box */}
@@ -107,6 +157,23 @@ export default function ChatScreen() {
         </View>
       </Modal>
     </KeyboardAvoidingView>
+  );
+}
+
+// Red card shown when the safety check finds something. Same content as "Get help now".
+function HelpCard() {
+  return (
+    <View style={styles.helpCard}>
+      <Text style={styles.helpTitle}>You deserve support right now</Text>
+      <Pressable style={styles.helpCall} onPress={() => Linking.openURL('tel:112')}>
+        <PhoneIcon color={color.text.onBrand} size={16} />
+        <Text style={styles.helpCallLabel}>Emergency · 112</Text>
+      </Pressable>
+      <Pressable style={styles.helpRow} onPress={() => Linking.openURL('tel:08001110111')}>
+        <PhoneIcon color={color.feedback.danger} size={14} />
+        <Text style={styles.helpRowLabel}>TelefonSeelsorge · 0800 111 0 111</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -176,6 +243,65 @@ const styles = StyleSheet.create({
   messageText: {
     ...text.chatText,
     color: color.text.body,
+  },
+  disclaimer: {
+    ...text.caption,
+    color: color.text.muted,
+    textAlign: 'center',
+    marginBottom: space[1],
+  },
+  typing: {
+    width: 56,
+  },
+  ratingCard: {
+    alignSelf: 'flex-end',
+    width: '86%',
+    padding: space[4],
+    gap: space[3],
+    borderRadius: radius.md,
+    backgroundColor: color.surface.default,
+  },
+  ratingButton: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderRadius: radius.quickLink,
+    backgroundColor: color.brand.primary,
+  },
+  ratingButtonLabel: {
+    ...text.labelDefault,
+    color: color.text.onBrand,
+  },
+  helpCard: {
+    padding: space[4],
+    gap: 10,
+    borderRadius: radius.lg,
+    backgroundColor: color.extra.dangerSubtle,
+  },
+  helpTitle: {
+    ...text.rowTitle,
+    color: color.feedback.danger,
+  },
+  helpCall: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space[2],
+    height: size.controlMd,
+    borderRadius: radius.quickLink,
+    backgroundColor: color.feedback.danger,
+  },
+  helpCallLabel: {
+    ...text.bodyEmphasis,
+    color: color.text.onBrand,
+  },
+  helpRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space[2],
+  },
+  helpRowLabel: {
+    ...text.labelDefault,
+    color: color.feedback.danger,
   },
   quickReplies: {
     flexDirection: 'row',
