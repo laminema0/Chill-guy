@@ -3,7 +3,7 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { color, elevation, radius, space, text } from '../theme/tokens';
+import { color, elevation, radius, space, text } from '../../theme/tokens';
 
 const textStyles = [
   ['Display/H1', text.displayH1],

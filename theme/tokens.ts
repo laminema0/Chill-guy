@@ -59,6 +59,19 @@ export const color = {
     danger: primitives.red500,
     rating: primitives.amber500,
   },
+
+  // Used on the Final Journey screens but not Figma variables yet.
+  extra: {
+    dangerSubtle: '#FEF2F2', // Cool-Down Revisit card, "Revisit ready" tag
+    tealSoft: primitives.teal50, // Breathe subtitle and text on brand background
+    indigo: '#3668A8', // "Urge → Expression" bar in My Story
+    placeholder: primitives.neutral300, // search placeholder, row chevrons
+    navBar: 'rgba(255, 255, 255, 0.92)', // frosted bottom nav bar
+    navActive: 'rgba(46, 143, 163, 0.08)', // active tab background
+    fabGradientEnd: '#3AABBC', // Chat button gradient end colour
+    breatheRingOuter: 'rgba(255, 255, 255, 0.12)',
+    breatheRingMiddle: 'rgba(255, 255, 255, 0.18)',
+  },
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -80,6 +93,12 @@ export const radius = {
   lg: 18,
   pill: 22,
   full: 999,
+
+  // Used on the Final Journey screens but not Figma variables yet.
+  card: 15, // screen cards (Home, My Story, My Plan, Settings)
+  quickLink: 14, // My Story / My Plan buttons on Home
+  navBar: 34, // bottom nav bar and Chat button
+  navItem: 30, // active tab highlight
 } as const;
 
 export const size = {
@@ -94,6 +113,7 @@ export const size = {
   chip: 30, // Chip height in the Figma component; not a Figma variable yet
   navItemWidth: 72,
   navItemHeight: 56,
+  avatarHeader: 34, // profile picture at the top of Home
 } as const;
 
 // ---------------------------------------------------------------------------
@@ -131,6 +151,25 @@ export const text = {
   cardTitle: { fontFamily: font.bold, fontSize: 15, lineHeight: 20 },
   cardBody: { fontFamily: font.regular, fontSize: 13, lineHeight: 18 },
   fabLabel: { fontFamily: font.medium, fontSize: 10, lineHeight: 12 },
+
+  // Text used on the Final Journey screens (sizes from Figma, not saved as text styles yet).
+  screenTitle: { fontFamily: font.bold, fontSize: 24, lineHeight: 29 },
+  sectionTitle: { fontFamily: font.medium, fontSize: 17, lineHeight: 21 },
+  question: { fontFamily: font.medium, fontSize: 16, lineHeight: 20 },
+  rowTitle: { fontFamily: font.medium, fontSize: 15, lineHeight: 19 },
+  rowBody: { fontFamily: font.regular, fontSize: 13, lineHeight: 17 },
+  chipLarge: { fontFamily: font.medium, fontSize: 14, lineHeight: 17 },
+  primaryAction: { fontFamily: font.medium, fontSize: 17, lineHeight: 21 },
+  arrow: { fontFamily: font.medium, fontSize: 18, lineHeight: 22 },
+  back: { fontFamily: font.medium, fontSize: 30, lineHeight: 36 },
+  tag: { fontFamily: font.bold, fontSize: 10, lineHeight: 12 },
+  sectionLabel: { fontFamily: font.bold, fontSize: 11, lineHeight: 13 },
+  navLabel: { fontFamily: font.medium, fontSize: 10, lineHeight: 12, letterSpacing: 0.1 },
+  navLabelActive: { fontFamily: font.bold, fontSize: 10, lineHeight: 12, letterSpacing: 0.1 },
+  groupLabel: { fontFamily: font.bold, fontSize: 12, lineHeight: 15 },
+  dateLabel: { fontFamily: font.medium, fontSize: 12, lineHeight: 15 },
+  lead: { fontFamily: font.regular, fontSize: 15, lineHeight: 19 },
+  counter: { fontFamily: font.regular, fontSize: 18, lineHeight: 22 },
 } satisfies Record<string, TextStyle>;
 
 // ---------------------------------------------------------------------------
@@ -138,4 +177,15 @@ export const text = {
 // ---------------------------------------------------------------------------
 export const elevation = {
   card: { boxShadow: '0px 2px 8px 0px rgba(31, 64, 82, 0.08)' },
+  // Bottom nav shadows from the Final Journey screens.
+  navBar: { boxShadow: '0px 4px 24px 0px rgba(0, 0, 0, 0.1)' },
+  fab: { boxShadow: '0px 6px 11px 0px rgba(46, 143, 163, 0.44)' },
+} as const;
+
+// Layout values shared by every screen (Figma frames are 402 wide with 24 side padding).
+export const layout = {
+  screenPadding: space[5],
+  navBottomGap: 14, // space under the floating bottom nav
+  navSide: 22, // space left and right of the floating bottom nav
+  navClearance: 110, // bottom padding so content can scroll above the nav
 } as const;

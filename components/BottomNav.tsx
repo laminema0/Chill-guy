@@ -1,9 +1,9 @@
-// BottomNav from Figma (node 2189:8977): a floating white bar of NavItems,
-// plus the round Chat button. The Chat button is hidden in V1 (showChat = false).
+// BottomNav as it appears on the Final Journey screens (e.g. node 2028:4392):
+// a floating frosted bar of NavItems plus the round gradient Chat button.
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { color, elevation, size, space, text } from '../theme/tokens';
+import { color, elevation, radius, size, space, text } from '../theme/tokens';
 import { ChatBubbleIcon } from './icons/NavIcons';
 import { NavItem } from './NavItem';
 
@@ -38,8 +38,8 @@ export function BottomNav({ tabs, activeKey, onSelect, showChat = false, onChatP
 
       {showChat ? (
         <Pressable onPress={onChatPress} accessibilityRole="button" accessibilityLabel="Chat" style={styles.fab}>
-          <ChatBubbleIcon color={color.text.onBrand} dotColor={color.brand.primary} />
-          <Text style={styles.fabLabel}>Chat</Text>
+          <ChatBubbleIcon color={color.text.onBrand} dotColor={color.brand.active} />
+          <Text style={[text.navLabelActive, styles.fabLabel]}>Chat</Text>
         </Pressable>
       ) : null}
     </View>
@@ -49,32 +49,34 @@ export function BottomNav({ tabs, activeKey, onSelect, showChat = false, onChatP
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space[2],
+    gap: 10,
+    height: size.nav,
+    width: '100%',
+    maxWidth: 358,
+    alignSelf: 'center',
   },
   bar: {
-    ...elevation.card,
+    ...elevation.navBar,
+    flex: 1,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: space[1],
-    height: size.nav,
-    paddingHorizontal: space[2],
-    borderRadius: size.nav / 2,
-    backgroundColor: color.surface.default,
+    gap: 10,
+    paddingTop: 5,
+    paddingHorizontal: 5,
+    borderRadius: radius.navBar,
+    backgroundColor: color.extra.navBar,
   },
   fab: {
-    ...elevation.card,
+    ...elevation.fab,
     width: size.nav,
     height: size.nav,
-    borderRadius: size.nav / 2,
+    borderRadius: radius.navBar,
     alignItems: 'center',
     justifyContent: 'center',
     gap: space[1],
-    backgroundColor: color.brand.primary,
+    backgroundColor: color.brand.active,
+    experimental_backgroundImage: `linear-gradient(135deg, ${color.brand.active} 0%, ${color.extra.fabGradientEnd} 100%)`,
   },
   fabLabel: {
-    ...text.fabLabel,
     color: color.text.onBrand,
   },
 });

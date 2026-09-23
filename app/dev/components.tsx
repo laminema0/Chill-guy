@@ -1,6 +1,5 @@
-// Milestone 2 test screen: every design system component in every state,
-// so you can compare the phone with the Figma Design System page.
-// It will be replaced by the real Home screen in Milestone 3.
+// Design system test screen: every component in every state, to compare with the
+// Figma Design System page. Opened from Settings → "Design system (dev)".
 import { useState, type ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,8 +20,8 @@ import {
   Rating,
   SpecialistsIcon,
   type BottomNavTab,
-} from '../components';
-import { color, space, text } from '../theme/tokens';
+} from '../../components';
+import { color, space, text } from '../../theme/tokens';
 
 const feelings = ['Overwhelmed', 'Hurt', 'Ignored', 'Tired'];
 
@@ -123,7 +122,7 @@ export default function ComponentsTestScreen() {
           <Text style={styles.hint}>Plans and History icons are new, drawn to match the Figma icons.</Text>
         </Section>
 
-        <Button label="View design tokens" type="secondary" onPress={() => router.push('/tokens')} />
+        <Button label="View design tokens" type="secondary" onPress={() => router.push('/dev/tokens')} />
       </ScrollView>
     </SafeAreaView>
   );

@@ -22,6 +22,8 @@ export default function RootLayout() {
     return null;
   }
 
+  // (tabs) holds the screens with the bottom nav (Home, Breathe, Specialists).
+  // Every other screen opens on top of them without the nav, like in Figma.
   return (
     <>
       <StatusBar style="dark" />

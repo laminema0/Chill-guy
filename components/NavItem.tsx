@@ -1,9 +1,9 @@
-// NavItem from Figma (node 2189:1606). One bottom-nav tab: icon + label.
-// Active tab gets the light teal background.
+// NavItem from Figma (node 2189:1606), styled as it appears on the Final Journey screens:
+// icon + small label; the active tab gets a soft teal highlight.
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { color, radius, size, space, text } from '../theme/tokens';
+import { color, radius, space, text } from '../theme/tokens';
 
 type NavItemProps = {
   label: string;
@@ -24,24 +24,21 @@ export function NavItem({ label, renderIcon, active = false, onPress }: NavItemP
       style={[styles.item, active && styles.itemActive]}
     >
       {renderIcon(tint)}
-      <Text style={[styles.label, { color: tint }]}>{label}</Text>
+      <Text style={[active ? text.navLabelActive : text.navLabel, { color: tint }]}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   item: {
-    width: size.navItemWidth,
-    height: size.navItemHeight,
-    borderRadius: radius.md,
+    flex: 1,
+    height: 58,
+    borderRadius: radius.navItem,
     alignItems: 'center',
     justifyContent: 'center',
     gap: space[1],
   },
   itemActive: {
-    backgroundColor: color.surface.subtle,
-  },
-  label: {
-    ...text.overline,
+    backgroundColor: color.extra.navActive,
   },
 });
