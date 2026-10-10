@@ -1,19 +1,24 @@
 // Chill Guy chat, from Figma "7 · Chill Guy chat" and "8 · Chat — save as log".
-// Chill Guy is not an AI: `lib/chat` reads each message (who, what happened, feelings, thinking traps)
-// and picks a written reply, so it stays on topic. Every message passes the safety check first.
-import { useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Linking, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+// AI replies use our Cloudflare backend. Emergency support still works locally.
+import { useEffect, useRef, useState } from 'react';
+import { Image, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackButton, HelpPill, IntensitySlider } from '../components';
 import { MicIcon, PhoneIcon } from '../components/icons/MoreIcons';
 import { initialState, openingTurn, respond, type BotTurn, type ChatState, type Chip, type Input } from '../lib/chat/engine';
+import { askChillGuy, type ChatMessage } from '../lib/chat/ai';
+import { checkSafety } from '../lib/chat/safety';
 import { color, layout, radius, size, space, text } from '../theme/tokens';
 
 type Item = { kind: 'guy' | 'me'; text: string } | { kind: 'help' };
 
-const REPLY_DELAY = 450; // a short pause so Chill Guy doesn't answer instantly
+const aiChips: Chip[] = [
+  { id: 'breathe', label: 'Take a breathing break', href: '/breathe' },
+  { id: 'plan', label: 'Make an If-Then plan', href: '/plan' },
+  { id: 'human', label: 'Talk to a human', href: '/specialists' },
+];
 
 const toItems = (turn: BotTurn): Item[] => [
   ...turn.messages.map((t): Item => ({ kind: 'guy', text: t })),
@@ -29,40 +34,75 @@ export default function ChatScreen() {
   const [typing, setTyping] = useState(false);
   const [rating, setRating] = useState(5);
   const [draft, setDraft] = useState('');
-  const [saveOpen, setSaveOpen] = useState(false);
+  const [consented, setConsented] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const history = useRef<ChatMessage[]>([]);
+  const pending = useRef(false);
+  const request = useRef<AbortController | null>(null);
+  const mounted = useRef(true);
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; request.current?.abort(); };
+  }, []);
 
   const scrollDown = () => setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 60);
 
-  const talk = (input: Input, shown: string) => {
+  const talk = async (input: Input, shown: string) => {
+    if (pending.current || !consented) return;
+    pending.current = true;
+    setError(null);
     setItems((list) => [...list, { kind: 'me', text: shown }]);
     setTurn({ messages: [], chips: [] });
     setTyping(true);
     scrollDown();
-    const [next, reply] = respond(state.current, input);
-    state.current = next;
-    setTimeout(() => {
-      setTyping(false);
-      setItems((list) => [...list, ...toItems(reply)]);
-      // An empty reply (e.g. after opening another screen) keeps the current buttons.
-      setTurn((current) => (reply.messages.length > 0 || reply.chips.length > 0 ? reply : current));
-      if (reply.askRating) setRating(5);
-      scrollDown();
-    }, REPLY_DELAY);
+    try {
+      const safetyFlow = ['harmCheck', 'crisis', 'support'].includes(state.current.step);
+      if (checkSafety(shown) || safetyFlow) {
+        const [next, reply] = respond(state.current, input);
+        state.current = next;
+        // Do not forward locally detected crisis messages or their history to Groq.
+        history.current = [];
+        setItems((list) => [...list, ...toItems(reply)]);
+        setTurn({ ...reply, chips: reply.chips.filter((chip) => !chip.save) });
+      } else {
+        const messages: ChatMessage[] = [...history.current, { role: 'user', content: shown }];
+        request.current = new AbortController();
+        const result = await askChillGuy(messages, request.current);
+        if (!mounted.current) return;
+        history.current = result.help ? [] : [...messages, { role: 'assistant' as const, content: result.reply }].slice(-10);
+        const reply: BotTurn = {
+          messages: [result.reply],
+          chips: result.help ? [{ id: 'getHelp', label: 'Get help now', href: '/get-help', highlighted: true }] : aiChips,
+          helpCard: result.help,
+        };
+        if (result.help) state.current = { ...initialState, step: 'crisis' };
+        setItems((list) => [...list, ...toItems(reply)]);
+        setTurn(reply);
+      }
+    } catch (cause) {
+      if (!mounted.current) return;
+      setError(cause instanceof Error ? cause.message : 'Could not connect. Please try again.');
+      // Restore the unsent message for an explicit retry; never substitute a scripted answer.
+      setDraft(shown);
+      setItems((list) => list.slice(0, -1));
+      setTurn({ messages: [], chips: aiChips });
+    } finally {
+      pending.current = false;
+      request.current = null;
+      if (mounted.current) { setTyping(false); scrollDown(); }
+    }
   };
 
   const send = (value: string) => {
     const trimmed = value.trim();
-    if (!trimmed) return;
+    if (!trimmed || pending.current || !consented) return;
     setDraft('');
     talk({ text: trimmed }, trimmed);
   };
 
   const pressChip = (chip: Chip) => {
-    if (chip.save) {
-      setSaveOpen(true);
-      return;
-    }
-    if (chip.href) router.push(chip.href);
+    if (chip.href) { router.push(chip.href); return; }
     talk({ chip: chip.id }, chip.label);
   };
 
@@ -74,7 +114,7 @@ export default function ChatScreen() {
         <Image source={require('../assets/images/chill-guy-mascot.png')} style={styles.headerAvatar} />
         <View>
           <Text style={styles.headerName}>Chill Guy</Text>
-          <Text style={styles.headerStatus}>always here</Text>
+          <Text style={styles.headerStatus}>AI companion</Text>
         </View>
         <View style={styles.headerSpacer} />
         <HelpPill />
@@ -82,6 +122,17 @@ export default function ChatScreen() {
 
       <ScrollView ref={scroll} contentContainerStyle={styles.messages} onContentSizeChange={scrollDown}>
         <Text style={styles.disclaimer}>Chill Guy is a guide, not a therapist. In an emergency, tap Help.</Text>
+        {!consented ? (
+          <View style={styles.guy}>
+            <Text style={styles.messageText}>
+              AI chat sends your messages and recent replies through Cloudflare to Groq. Avoid names or sensitive details.
+              Replies can be mistaken. This conversation is kept only while this screen is open; it is not saved as a log.
+            </Text>
+            <QuickReply label="Continue with AI chat" highlighted onPress={() => setConsented(true)} />
+            <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
+          </View>
+        ) : null}
+        {error ? <Text accessibilityRole="alert" style={styles.disclaimer}>{error}</Text> : null}
         {items.map((item, i) =>
           item.kind === 'help' ? (
             <HelpCard key={i} />
@@ -118,6 +169,8 @@ export default function ChatScreen() {
       {/* Message box */}
       <View style={[styles.composer, { marginBottom: insets.bottom + layout.navBottomGap }]}>
         <TextInput
+          editable={consented && !typing}
+          maxLength={2000}
           value={draft}
           onChangeText={setDraft}
           placeholder="Type how you feel…"
@@ -126,36 +179,11 @@ export default function ChatScreen() {
           onSubmitEditing={() => send(draft)}
           returnKeyType="send"
         />
-        <Pressable style={styles.micButton} onPress={() => send(draft)} accessibilityLabel="Send">
+        <Pressable disabled={!consented || typing} style={styles.micButton} onPress={() => send(draft)} accessibilityLabel="Send">
           <MicIcon />
         </Pressable>
       </View>
 
-      {/* Save this as a log? */}
-      <Modal transparent visible={saveOpen} animationType="fade" onRequestClose={() => setSaveOpen(false)}>
-        <View style={styles.scrim}>
-          <View style={styles.dialog}>
-            <Text style={styles.dialogTitle}>Save this as a log?</Text>
-            <Text style={styles.dialogBody}>
-              This conversation becomes a log in My Story, so you can revisit it later with calmer eyes.
-            </Text>
-            <View style={styles.dialogButtons}>
-              <Pressable style={[styles.dialogButton, styles.discard]} onPress={() => setSaveOpen(false)}>
-                <Text style={[styles.dialogButtonLabel, { color: color.feedback.danger }]}>Discard</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.dialogButton, styles.save]}
-                onPress={() => {
-                  setSaveOpen(false);
-                  router.push('/story');
-                }}
-              >
-                <Text style={[styles.dialogButtonLabel, { color: color.text.onBrand }]}>Save log</Text>
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </KeyboardAvoidingView>
   );
 }

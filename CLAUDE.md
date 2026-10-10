@@ -52,7 +52,7 @@ Out for now: My Anger Story, Journey Chapters, Repair and Express, AI chat (hide
 Bottom nav: Home, Breathe, Plans, History.
 
 ## Hard rules
-- All data stays on the device. No servers, no accounts, no analytics SDKs.
+- Reflection data stays on the device. Amin authorized optional Groq AI chat on 2026-10-10: messages and recent replies may go through Cloudflare to Groq after an explicit notice. No accounts or analytics SDKs.
 - A "Get help now" screen is reachable in one tap from every screen: 112 and TelefonSeelsorge 0800 111 0 111 / 0800 111 0 222, tap to call.
 - App text: no blame, no "you should", no clinical claims or promises.
 
@@ -88,3 +88,7 @@ Update this section at the end of each session with what was finished and what i
 
 ## Expo notes
 See `AGENTS.md` for Expo commands and rules (use `npx expo install`, never trust old Expo APIs from memory).
+
+- 2026-10-10, Groq chat prepared: `lib/chat/ai.ts` calls a separate Cloudflare Worker, `backend/worker.mjs`, with short conversation history, timeouts and explicit error messages. Chat displays a consent notice; local safety support remains available. Worker code is ready for deployment as `chill-guy-api`; the existing `chill-guy` Worker currently serves the website. Groq key must remain in Cloudflare secrets. Deployment and a real Groq smoke test remain pending.
+
+- 2026-10-10, Backend live at `https://rough-voice-a344.amin-ranjbar77.workers.dev`: health confirmed configured true and a non-sensitive chat request returned HTTP 200 with a real Groq reply. Client endpoint updated to this hostname. Frontend publication remains blocked by GitHub connection write permissions.

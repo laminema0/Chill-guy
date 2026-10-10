@@ -6,7 +6,7 @@ A mobile anger management app (Expo + React Native), designed as an MA thesis pr
 
 V1 helps people calm down in the moment and understand why their anger comes back. It is a **self-help and reflection tool, not therapy**.
 
-- All data stays on the device: no accounts, no servers, no analytics.
+- Reflection features remain on the device. Optional AI chat sends messages and recent replies through Cloudflare to Groq after an explicit notice. Chat is not saved as a log; no analytics are added.
 - In crisis? Call **112**, or TelefonSeelsorge **0800 111 0 111** / **0800 111 0 222**.
 
 See [`CLAUDE.md`](CLAUDE.md) for the stack, scope and roadmap.
@@ -22,3 +22,7 @@ See [`CLAUDE.md`](CLAUDE.md) for the stack, scope and roadmap.
    npx expo start
    ```
 3. Scan the QR code: with the Camera app on iPhone, or from inside Expo Go on Android. Phone and computer must be on the same Wi-Fi (if that doesn't work, try `npx expo start --tunnel`).
+
+## AI chat
+
+The chat uses Groq through a separate Cloudflare Worker; the API key never enters the mobile app or web bundle. See [backend/README.md](backend/README.md) for deployment and testing. The UI requires consent before sending chat messages and keeps the existing local emergency-support flow.
