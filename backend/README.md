@@ -16,6 +16,10 @@ Backend deployed and a real Groq request verified on 2026-10-10. The frontend ch
 
 If Cloudflare assigns a different API hostname, update `CHAT_ENDPOINT` in `lib/chat/ai.ts` before building the app. The frontend address is public; the Groq key is not. Never put the key in GitHub, Expo public environment variables, or frontend code.
 
+## Updating the Worker
+
+When `worker.mjs` changes (for example the AI instruction), open the **rough-voice-a344** Worker in Cloudflare, choose **Edit code**, replace everything with the new `worker.mjs`, and select **Deploy**. The `GROQ_API_KEY` secret stays as it is.
+
 ## Rate limiting
 
 Dashboard-only deployment has bounded request sizes and best-effort in-memory limits of 6 requests per IP per minute and 20 total per minute **per running isolate**. These counters reset and do not provide a global quota guarantee. CORS only restricts browser origins; this is a public endpoint without authentication. Keep Groq on the free plan while testing. Groq's shared token and request quotas can still be exhausted.

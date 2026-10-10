@@ -43,6 +43,14 @@ export default function SettingsScreen() {
       <Row icon={<DownloadIcon />} title="Download personal logs" onPress={() => later('Download personal logs')} />
       <Row icon={<KeyIcon />} title="Manage data & consent" onPress={() => later('Manage data & consent')} />
 
+      <Text style={styles.group}>ABOUT</Text>
+      <Row
+        icon={<HandshakeIcon />}
+        title="How Chill Guy works"
+        subtitle="What the AI can and cannot do, privacy and safety"
+        onPress={() => router.push('/how-it-works')}
+      />
+
       <Text style={styles.group}>ACCOUNT</Text>
       <Row icon={<TrashIcon />} title="Delete account permanently" danger onPress={() => later('Delete data')} />
 

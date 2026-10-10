@@ -14,6 +14,15 @@ import { color, layout, radius, size, space, text } from '../theme/tokens';
 
 type Item = { kind: 'guy' | 'me'; text: string } | { kind: 'help' };
 
+// The AI notice is accepted once per app session, so coming back to the chat does not ask again.
+let consentedThisSession = false;
+
+const consentPoints = [
+  'I am an AI, not a therapist. I can help you slow down and think things through, but I can be wrong.',
+  'To answer, your messages and my recent replies go through our server at Cloudflare to Groq. We do not save them. Please leave out names and private details.',
+  'If you might hurt yourself or someone else, tap Help or call 112.',
+];
+
 const aiChips: Chip[] = [
   { id: 'breathe', label: 'Take a breathing break', href: '/breathe' },
   { id: 'plan', label: 'Make an If-Then plan', href: '/plan' },
@@ -34,7 +43,8 @@ export default function ChatScreen() {
   const [typing, setTyping] = useState(false);
   const [rating, setRating] = useState(5);
   const [draft, setDraft] = useState('');
-  const [consented, setConsented] = useState(false);
+  const [consented, setConsented] = useState(consentedThisSession);
+  const accept = () => { consentedThisSession = true; setConsented(true); };
   const [error, setError] = useState<string | null>(null);
   const history = useRef<ChatMessage[]>([]);
   const pending = useRef(false);
@@ -114,22 +124,34 @@ export default function ChatScreen() {
         <Image source={require('../assets/images/chill-guy-mascot.png')} style={styles.headerAvatar} />
         <View>
           <Text style={styles.headerName}>Chill Guy</Text>
-          <Text style={styles.headerStatus}>AI companion</Text>
+          <Text style={styles.headerStatus}>AI, not a therapist</Text>
         </View>
         <View style={styles.headerSpacer} />
         <HelpPill />
       </View>
 
       <ScrollView ref={scroll} contentContainerStyle={styles.messages} onContentSizeChange={scrollDown}>
-        <Text style={styles.disclaimer}>Chill Guy is a guide, not a therapist. In an emergency, tap Help.</Text>
+        <Text style={styles.disclaimer}>
+          AI replies can be wrong and do not replace a therapist. In an emergency, tap Help.{' '}
+          <Text style={styles.disclaimerLink} accessibilityRole="link" onPress={() => router.push('/how-it-works')}>
+            How Chill Guy works
+          </Text>
+        </Text>
         {!consented ? (
-          <View style={styles.guy}>
-            <Text style={styles.messageText}>
-              AI chat sends your messages and recent replies through Cloudflare to Groq. Avoid names or sensitive details.
-              Replies can be mistaken. This conversation is kept only while this screen is open; it is not saved as a log.
-            </Text>
-            <QuickReply label="Continue with AI chat" highlighted onPress={() => setConsented(true)} />
-            <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
+          <View style={styles.consent}>
+            <Text style={styles.consentTitle}>Before we start</Text>
+            {consentPoints.map((point) => (
+              <View key={point} style={styles.consentLine}>
+                <View style={styles.consentBullet} />
+                <Text style={styles.consentText}>{point}</Text>
+              </View>
+            ))}
+            <Text style={styles.consentText}>This chat is kept only while it is open and is not saved as a log.</Text>
+            <View style={styles.consentButtons}>
+              <QuickReply label="I understand, start chat" highlighted onPress={accept} />
+              <QuickReply label="How Chill Guy works" onPress={() => router.push('/how-it-works')} />
+              <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
+            </View>
           </View>
         ) : null}
         {error ? <Text accessibilityRole="alert" style={styles.disclaimer}>{error}</Text> : null}
@@ -277,6 +299,42 @@ const styles = StyleSheet.create({
     color: color.text.muted,
     textAlign: 'center',
     marginBottom: space[1],
+  },
+  disclaimerLink: {
+    color: color.brand.primary,
+    textDecorationLine: 'underline',
+  },
+  consent: {
+    gap: space[2],
+    padding: space[4],
+    borderRadius: radius.md,
+    backgroundColor: color.surface.default,
+  },
+  consentTitle: {
+    ...text.personName,
+    color: color.text.heading,
+  },
+  consentLine: {
+    flexDirection: 'row',
+    gap: space[2],
+  },
+  consentBullet: {
+    width: 5,
+    height: 5,
+    marginTop: 8,
+    borderRadius: 3,
+    backgroundColor: color.brand.primary,
+  },
+  consentText: {
+    ...text.chatText,
+    flex: 1,
+    color: color.text.body,
+  },
+  consentButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space[2],
+    marginTop: space[1],
   },
   typing: {
     width: 56,
