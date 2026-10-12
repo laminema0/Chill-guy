@@ -34,6 +34,7 @@ export default function ChatScreen() {
   const [typing, setTyping] = useState(false);
   const [rating, setRating] = useState(5);
   const [draft, setDraft] = useState('');
+  const [draftHeight, setDraftHeight] = useState<number>(text.lead.lineHeight);
   const [consented, setConsented] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const history = useRef<ChatMessage[]>([]);
@@ -122,16 +123,6 @@ export default function ChatScreen() {
 
       <ScrollView ref={scroll} contentContainerStyle={styles.messages} onContentSizeChange={scrollDown}>
         <Text style={styles.disclaimer}>Chill Guy is a guide, not a therapist. In an emergency, tap Help.</Text>
-        {!consented ? (
-          <View style={styles.guy}>
-            <Text style={styles.messageText}>
-              AI chat sends your messages and recent replies through Cloudflare to Groq. Avoid names or sensitive details.
-              Replies can be mistaken. This conversation is kept only while this screen is open; it is not saved as a log.
-            </Text>
-            <QuickReply label="Continue with AI chat" highlighted onPress={() => setConsented(true)} />
-            <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
-          </View>
-        ) : null}
         {error ? <Text accessibilityRole="alert" style={styles.disclaimer}>{error}</Text> : null}
         {items.map((item, i) =>
           item.kind === 'help' ? (
@@ -142,6 +133,20 @@ export default function ChatScreen() {
             </View>
           ),
         )}
+        {!consented ? (
+          <>
+            <View style={styles.guy}>
+              <Text style={styles.messageText}>
+                AI chat sends your messages and recent replies through Cloudflare to Groq. Avoid names or sensitive details.
+                Replies can be mistaken. This conversation is kept only while this screen is open; it is not saved as a log.
+              </Text>
+            </View>
+            <View style={styles.quickReplies}>
+              <QuickReply label="Continue with AI chat" highlighted onPress={() => setConsented(true)} />
+              <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
+            </View>
+          </>
+        ) : null}
         {typing ? (
           <View style={[styles.guy, styles.typing]}>
             <Text style={styles.messageText}>…</Text>
@@ -175,7 +180,12 @@ export default function ChatScreen() {
           onChangeText={setDraft}
           placeholder="Type how you feel…"
           placeholderTextColor={color.extra.placeholder}
-          style={styles.composerInput}
+          multiline
+          // Enter sends: native reads submitBehavior, react-native-web still reads blurOnSubmit.
+          submitBehavior="submit"
+          blurOnSubmit
+          onContentSizeChange={(e) => setDraftHeight(e.nativeEvent.contentSize.height)}
+          style={[styles.composerInput, { height: draft ? Math.min(Math.max(draftHeight, text.lead.lineHeight), text.lead.lineHeight * 5) : text.lead.lineHeight }]}
           onSubmitEditing={() => send(draft)}
           returnKeyType="send"
         />
@@ -355,7 +365,7 @@ const styles = StyleSheet.create({
   },
   composer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     gap: 10,
     marginHorizontal: 20,
     paddingLeft: 18,
@@ -371,6 +381,9 @@ const styles = StyleSheet.create({
     flex: 1,
     color: color.text.body,
     paddingVertical: 0,
+    marginVertical: (36 - text.lead.lineHeight) / 2,
+    // Web only: the browser's focus ring. React Native's types do not list 'none'.
+    ...(Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null),
   },
   micButton: {
     width: 36,
