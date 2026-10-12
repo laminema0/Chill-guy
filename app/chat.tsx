@@ -123,6 +123,20 @@ export default function ChatScreen() {
 
       <ScrollView ref={scroll} contentContainerStyle={styles.messages} onContentSizeChange={scrollDown}>
         <Text style={styles.disclaimer}>Chill Guy is a guide, not a therapist. In an emergency, tap Help.</Text>
+        {!consented ? (
+          <>
+            <View style={styles.guy}>
+              <Text style={styles.messageText}>
+                AI chat sends your messages and recent replies through Cloudflare to Groq. Avoid names or sensitive details.
+                Replies can be mistaken. This conversation is kept only while this screen is open; it is not saved as a log.
+              </Text>
+            </View>
+            <View style={styles.noticeChoices}>
+              <QuickReply label="Continue with AI chat" highlighted onPress={() => setConsented(true)} />
+              <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
+            </View>
+          </>
+        ) : null}
         {error ? <Text accessibilityRole="alert" style={styles.disclaimer}>{error}</Text> : null}
         {items.map((item, i) =>
           item.kind === 'help' ? (
@@ -133,20 +147,6 @@ export default function ChatScreen() {
             </View>
           ),
         )}
-        {!consented ? (
-          <>
-            <View style={styles.guy}>
-              <Text style={styles.messageText}>
-                AI chat sends your messages and recent replies through Cloudflare to Groq. Avoid names or sensitive details.
-                Replies can be mistaken. This conversation is kept only while this screen is open; it is not saved as a log.
-              </Text>
-            </View>
-            <View style={styles.quickReplies}>
-              <QuickReply label="Continue with AI chat" highlighted onPress={() => setConsented(true)} />
-              <QuickReply label="Use breathing instead" onPress={() => router.push('/breathe')} />
-            </View>
-          </>
-        ) : null}
         {typing ? (
           <View style={[styles.guy, styles.typing]}>
             <Text style={styles.messageText}>…</Text>
@@ -347,6 +347,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     gap: space[2],
     marginTop: 10,
+  },
+  // Choices that belong to Chill Guy's notice sit on his side, under his bubble.
+  noticeChoices: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space[2],
   },
   quickReply: {
     paddingHorizontal: 14,

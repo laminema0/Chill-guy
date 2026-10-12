@@ -94,3 +94,4 @@ See `AGENTS.md` for Expo commands and rules (use `npx expo install`, never trust
 - 2026-10-10, Backend live at `https://rough-voice-a344.amin-ranjbar77.workers.dev`: health confirmed configured true and a non-sensitive chat request returned HTTP 200 with a real Groq reply. Client endpoint updated to this hostname. Frontend publication remains blocked by GitHub connection write permissions.
 
 - 2026-10-12, Chat polish for the portfolio recording: the AI notice is now its own bubble after the greeting, with "Continue with AI chat" and "Use breathing instead" as quick replies below it (same chips and spacing as after a reply). The message box grows up to five lines instead of scrolling sideways, Enter still sends, and the browser focus outline is gone on web.
+- 2026-10-12, later: the AI notice is the first bubble again, and its two choices sit under it on the left (Chill Guy's side), with the greeting after them.
